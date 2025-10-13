@@ -24,8 +24,55 @@ PROFILES = {
 
 local RUNNING = nil
 
+
+-- Settings
+config = require('config')
+default = {
+	text_setting = {
+		pos = {
+			x = 555,
+			y = 514
+		}
+	},
+}
+settings = config.load(default)
+
+-- Widget
+local texts = require('texts')
+local function setup_text(text)
+    text:bg_alpha(255)
+    text:bg_visible(true)
+    text:font('ＭＳ ゴシック')
+    text:size(11)
+    text:color(255,255,255,255)
+    text:stroke_alpha(200)
+    text:stroke_color(20,20,20)
+    text:stroke_width(2)
+	text:show()
+end
+widget = texts.new("${msg}", default.text_setting)
+setup_text(widget)
+
+COUNTER = {}
+
+function add_counter(key)
+	if COUNTER[key] == nil then
+		COUNTER[key] = 0
+	end
+	COUNTER[key] = COUNTER[key] + 1
+end
+
+function update_widget()
+	local str = ''
+	for key,value in pairs(COUNTER) do
+		str = str..(key..': '..value..'\n')
+	end
+	widget.msg = str
+end
+
 windower.register_event('status change', function(new, old)
     if new == 2 then
+		add_counter('dead')
 		coroutine.sleep(10)
 		windower.send_command('wait 5;'..
 							'setkey enter; wait 0.1; setkey enter up; wait 2;'..
@@ -44,6 +91,8 @@ windower.register_event('addon command', function (...)
 	RUNNING = PROFILES[command]
 	if RUNNING then
 		log('Loop profile accepted: '..command)
+		add_counter(command)
+		update_widget()
 		if RUNNING.go_to then
 			local zone = get_zone(RUNNING.go_to)
 			if zone.id ~= windower.ffxi.get_info().zone then
