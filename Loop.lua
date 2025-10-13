@@ -24,6 +24,16 @@ PROFILES = {
 
 local RUNNING = nil
 
+windower.register_event('status change', function(new, old)
+    if new == 2 then
+		coroutine.sleep(10)
+		windower.send_command('wait 5;'..
+							'setkey enter; wait 0.1; setkey enter up; wait 2;'..
+							'setkey left; wait 0.1; setkey left up; wait 2;'..
+							'setkey enter; wait 0.1; setkey enter up;')
+    end
+end)
+
 windower.register_event('addon command', function (...)
 	local args	= T{...}:map(string.lower)
 	local command = args[1]:lower()
