@@ -73,6 +73,7 @@ end
 windower.register_event('status change', function(new, old)
     if new == 2 then
 		add_counter('dead')
+		update_widget()
 		coroutine.sleep(10)
 		windower.send_command('wait 5;'..
 							'setkey enter; wait 0.1; setkey enter up; wait 2;'..
