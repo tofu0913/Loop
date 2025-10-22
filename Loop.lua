@@ -8,17 +8,27 @@ require('mylibs/res')
 require('mylibs/utils')
 
 PROFILES = {
-	['limbo'] = {
-		go_to = 'マウラ',
-		next_action = 'ryu',
-		cmd = 'ryu loop',
+	['limbo-a'] = {
+		['limbo'] = {
+			go_to = 'マウラ',
+			next_action = 'ryu',
+			cmd = 'ryu loop',
+		},
+		['ryu'] = {
+			next_action = 'limbo',
+			cmd = 'lm auto a',
+		},
 	},
-	-- ['card'] = {
-		-- next_action = 'ryu',
-	-- },
-	['ryu'] = {
-		next_action = 'limbo',
-		cmd = 'lm auto a',
+	['limbo-t'] = {
+		['limbo'] = {
+			go_to = 'マウラ',
+			next_action = 'ryu',
+			cmd = 'ryu loop',
+		},
+		['ryu'] = {
+			next_action = 'limbo',
+			cmd = 'lm auto t',
+		},
 	},
 }
 
@@ -28,6 +38,7 @@ local RUNNING = nil
 -- Settings
 config = require('config')
 default = {
+	profile = 'limbo-a',
 	text_setting = {
 		pos = {
 			x = 555,
@@ -85,11 +96,16 @@ end)
 windower.register_event('addon command', function (...)
 	local args	= T{...}:map(string.lower)
 	local command = args[1]:lower()
+	if PROFILES[command] then
+		windower.add_to_chat(2, 'Setting profile: '..command)
+		settings.profile = command
+		settings:save()
+	end
 	if RUNNING ~= nil then
 		log('Busy...')
 		return
 	end
-	RUNNING = PROFILES[command]
+	RUNNING = PROFILES[settings.profile][command]
 	if RUNNING then
 		log('Loop profile accepted: '..command)
 		add_counter(command)
