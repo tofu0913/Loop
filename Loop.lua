@@ -139,4 +139,5 @@ end)
 
 windower.register_event('load', function()
     log('===========loaded===========')
+	windower.add_to_chat(2, 'Setting profile: '..settings.profile)
 end)
