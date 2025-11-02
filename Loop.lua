@@ -96,41 +96,44 @@ end)
 windower.register_event('addon command', function (...)
 	local args	= T{...}:map(string.lower)
 	local command = args[1]:lower()
-	if PROFILES[command] then
-		windower.add_to_chat(2, 'Setting profile: '..command)
-		settings.profile = command
-		settings:save()
-	end
 	if RUNNING ~= nil then
 		log('Busy...')
 		return
 	end
-	RUNNING = PROFILES[settings.profile][command]
-	if RUNNING then
-		log('Loop profile accepted: '..command)
-		add_counter(command)
-		update_widget()
-		if RUNNING.go_to then
-			local zone = get_zone(RUNNING.go_to)
-			if zone.id ~= windower.ffxi.get_info().zone then
-				if isNpcNear('Home Point') then
-					windower.send_command('sw hp '..zone.en..' '..(RUNNING.sw_num or ''))
-					coroutine.sleep(20)
-					windower.send_command('sw hp set')
-				else
-					log('No Home point nearby...')
-					return
+	if PROFILES[command] then
+		windower.add_to_chat(2, 'Setting profile: '..command)
+		settings.profile = command
+		settings:save()
+	elseif command == 'show' then
+		windower.add_to_chat(2, 'Setting profile: '..settings.profile)
+	else
+		RUNNING = PROFILES[settings.profile][command]
+		if RUNNING then
+			log('Loop profile accepted: '..command)
+			add_counter(command)
+			update_widget()
+			if RUNNING.go_to then
+				local zone = get_zone(RUNNING.go_to)
+				if zone.id ~= windower.ffxi.get_info().zone then
+					if isNpcNear('Home Point') then
+						windower.send_command('sw hp '..zone.en..' '..(RUNNING.sw_num or ''))
+						coroutine.sleep(20)
+						windower.send_command('sw hp set')
+					else
+						log('No Home point nearby...')
+						return
+					end
 				end
 			end
+			if RUNNING.next_action then
+				windower.send_command('lua u '..command..';'..
+									'wait 1;'..
+									'lua r '..RUNNING.next_action..';'..
+									'wait 1;'..
+									RUNNING.cmd)
+			end
+			RUNNING = nil
 		end
-		if RUNNING.next_action then
-			windower.send_command('lua u '..command..';'..
-								'wait 1;'..
-								'lua r '..RUNNING.next_action..';'..
-								'wait 1;'..
-								RUNNING.cmd)
-		end
-		RUNNING = nil
 	end
 end)
 
