@@ -7,30 +7,7 @@ require('logger')
 require('mylibs/res')
 require('mylibs/utils')
 
-PROFILES = {
-	['limbo-a'] = {
-		['limbo'] = {
-			go_to = 'マウラ',
-			next_action = 'ryu',
-			cmd = 'ryu loop',
-		},
-		['ryu'] = {
-			next_action = 'limbo',
-			cmd = 'lm auto a',
-		},
-	},
-	['limbo-t'] = {
-		['limbo'] = {
-			go_to = 'マウラ',
-			next_action = 'ryu',
-			cmd = 'ryu loop',
-		},
-		['ryu'] = {
-			next_action = 'limbo',
-			cmd = 'lm auto t',
-		},
-	},
-}
+PROFILES = require('profiles')
 
 local RUNNING = nil
 
