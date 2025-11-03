@@ -100,9 +100,10 @@ windower.register_event('addon command', function (...)
 		log('Busy...')
 		return
 	end
-	if PROFILES[command] then
-		windower.add_to_chat(2, 'Setting profile: '..command)
-		settings.profile = command
+	if command == 'set' and args[2] and PROFILES[args[2]:lower()] then
+		local newcmd = args[2]:lower()
+		windower.add_to_chat(2, 'Setting profile: '..newcmd)
+		settings.profile = newcmd
 		settings:save()
 	elseif command == 'show' then
 		windower.add_to_chat(2, 'Setting profile: '..settings.profile)
